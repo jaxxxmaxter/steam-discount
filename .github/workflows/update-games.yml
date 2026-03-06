@@ -1,0 +1,58 @@
+name: 定时更新游戏数据
+
+on:
+  schedule:
+    # 每天 UTC 0:00 (北京时间 8:00) 执行
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    # 允许手动触发
+  push:
+    branches:
+      - main
+
+jobs:
+  update-games:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: 安装依赖
+        run: npm ci
+      
+      - name: 运行数据更新脚本
+        run: npm run update:data
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 检查是否有更新
+        id: check_changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: 提交更新
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -A
+          git commit -m "chore: 更新游戏数据 $(date '+%Y-%m-%d %H:%M:%S')"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 上传更新日志
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          echo "更新已推送到仓库"
