@@ -16,6 +16,7 @@ export interface Game {
   reviewCount: number;     // Number of reviews
   genres: string[];        // Game genres
   platforms: string[];      // Available platforms
+  steamUrl: string;         // Steam store URL
 }
 
 export interface SaleEvent {

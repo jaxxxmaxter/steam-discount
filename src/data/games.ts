@@ -15,6 +15,12 @@ export const currentSale: SaleEvent = {
   isActive: true,
 };
 
+// Helper function to generate Steam URL from game name
+function getSteamUrl(name: string): string {
+  const encodedName = encodeURIComponent(name);
+  return `https://store.steamcommunity.com/search/?term=${encodedName}&ssr=0&l=schinese&force=1`;
+}
+
 // Mock game data
 export const games: Game[] = [
   {
@@ -31,6 +37,7 @@ export const games: Game[] = [
     reviewCount: 185000,
     genres: ['RPG', '策略', '冒险'],
     platforms: ['Windows', 'macOS', 'Linux'],
+    steamUrl: 'https://store.steampowered.com/app/1086940/',
   },
   {
     id: '2',
@@ -46,6 +53,7 @@ export const games: Game[] = [
     reviewCount: 320000,
     genres: ['RPG', '动作', '开放世界'],
     platforms: ['Windows', 'PS5', 'Xbox'],
+    steamUrl: 'https://store.steampowered.com/app/1091500/',
   },
   {
     id: '3',
@@ -61,6 +69,7 @@ export const games: Game[] = [
     reviewCount: 125000,
     genres: [' rogue-like', '动作', '地牢'],
     platforms: ['Windows', 'macOS', 'Linux', 'Switch'],
+    steamUrl: 'https://store.steampowered.com/app/1145360/',
   },
   {
     id: '4',
@@ -76,6 +85,7 @@ export const games: Game[] = [
     reviewCount: 280000,
     genres: ['RPG', '动作', '开放世界', '魂类'],
     platforms: ['Windows', 'PS5', 'PS4', 'Xbox'],
+    steamUrl: 'https://store.steampowered.com/app/1245620/',
   },
   {
     id: '5',
@@ -91,6 +101,7 @@ export const games: Game[] = [
     reviewCount: 210000,
     genres: ['动作', '开放世界', '冒险'],
     platforms: ['Windows'],
+    steamUrl: 'https://store.steampowered.com/app/1174180/',
   },
   {
     id: '6',
@@ -106,6 +117,7 @@ export const games: Game[] = [
     reviewCount: 95000,
     genres: ['动作', '冒险', '角色扮演'],
     platforms: ['Windows', 'PS5', 'PS4'],
+    steamUrl: 'https://store.steampowered.com/app/2322010/',
   },
   {
     id: '7',
@@ -121,6 +133,7 @@ export const games: Game[] = [
     reviewCount: 180000,
     genres: [' Metroidvania', '动作', '冒险'],
     platforms: ['Windows', 'macOS', 'Linux', 'Switch'],
+    steamUrl: 'https://store.steampowered.com/app/367520/',
   },
   {
     id: '8',
@@ -136,6 +149,7 @@ export const games: Game[] = [
     reviewCount: 420000,
     genres: ['模拟经营', 'RPG', '休闲'],
     platforms: ['Windows', 'macOS', 'Linux', 'Switch', 'PS4', 'Xbox'],
+    steamUrl: 'https://store.steampowered.com/app/413150/',
   },
   {
     id: '9',
@@ -151,6 +165,7 @@ export const games: Game[] = [
     reviewCount: 680000,
     genres: ['RPG', '开放世界', '冒险'],
     platforms: ['Windows', 'macOS', 'Linux', 'Switch', 'PS4', 'Xbox'],
+    steamUrl: 'https://store.steampowered.com/app/292030/',
   },
   {
     id: '10',
@@ -166,6 +181,7 @@ export const games: Game[] = [
     reviewCount: 190000,
     genres: ['动作', '魂类', '冒险'],
     platforms: ['Windows', 'PS4', 'Xbox'],
+    steamUrl: 'https://store.steampowered.com/app/814380/',
   },
   {
     id: '11',
@@ -181,6 +197,7 @@ export const games: Game[] = [
     reviewCount: 85000,
     genres: ['RPG', '冒险', '叙事'],
     platforms: ['Windows', 'macOS', 'Linux', 'PS4', 'Xbox', 'Switch'],
+    steamUrl: 'https://store.steampowered.com/app/632470/',
   },
   {
     id: '12',
@@ -196,6 +213,7 @@ export const games: Game[] = [
     reviewCount: 45000,
     genres: [' Metroidvania', '动作', '冒险'],
     platforms: ['Windows', 'macOS', 'Linux', 'Switch'],
+    steamUrl: 'https://store.steampowered.com/app/1030300/',
   },
 ];
 
