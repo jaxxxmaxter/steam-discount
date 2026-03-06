@@ -1,187 +1,139 @@
 /**
- * 游戏数据更新脚本
- * 
- * 此脚本模拟从 Steam API 获取最新折扣游戏数据
- * 实际使用时需要替换为真实的 Steam API 调用
- * 
- * 运行方式: node scripts/update-data.js
+ * Data Update Script
+ * Fetches real Steam game deals from CheapShark API
+ * Run: node scripts/update-data.js
  */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+const fs = require('fs');
+const path = require('path');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// CheapShark API endpoint - storeID=1 is Steam
+const API_URL = 'https://www.cheapshark.com/api/1.0/deals?storeID=1&upperPrice=100&pageSize=50';
 
-const UPDATES_LOG = path.join(__dirname, '..', 'UPDATES.log');
-const GAMES_DATA_FILE = path.join(__dirname, '..', 'src', 'data', 'games.ts');
+// Output file
+const OUTPUT_FILE = path.join(__dirname, '../src/data/games.ts');
 
-// 模拟从 Steam 获取数据
-function fetchSteamGames() {
-  // 实际项目中这里应该调用 Steam API
-  // 例如: https://store.steampowered.com/api/storesales/?cc=cn&l=schinese
-  
-  // 模拟返回的游戏数据
-  const mockGames = [
-    {
-      id: '1',
-      name: 'Counter-Strike 2',
-      coverImage: 'https://cdn.cloudflare.steamstatic.com/steam/apps/730/header.jpg',
-      originalPrice: 0,
-      currentPrice: 0,
-      discountPercent: 0,
-      lowestPrice: 0,
-      isLowestEver: false,
-      rating: 89,
-      genres: ['FPS', '动作', '多人'],
-      steamUrl: 'https://store.steampowered.com/app/730/CounterStrike_2/'
-    },
-    {
-      id: '2',
-      name: 'DOTA 2',
-      coverImage: 'https://cdn.cloudflare.steamstatic.com/steam/apps/570/header.jpg',
-      originalPrice: 0,
-      currentPrice: 0,
-      discountPercent: 0,
-      lowestPrice: 0,
-      isLowestEver: false,
-      rating: 83,
-      genres: ['MOBA', '策略', '多人'],
-      steamUrl: 'https://store.steampowered.com/app/570/DOTA_2/'
-    },
-    {
-      id: '3',
-      name: 'PUBG: BATTLEGROUNDS',
-      coverImage: 'https://cdn.cloudflare.steamstatic.com/steam/apps/578080/header.jpg',
-      originalPrice: 998,
-      currentPrice: 298,
-      discountPercent: 70,
-      lowestPrice: 298,
-      isLowestEver: true,
-      rating: 72,
-      genres: ['射击', '生存', '多人'],
-      steamUrl: 'https://store.steampowered.com/app/578080/PUBG_BATTLEGROUNDS/'
-    },
-    {
-      id: '4',
-      name: 'Grand Theft Auto V',
-      coverImage: 'https://cdn.cloudflare.steamstatic.com/steam/apps/271590/header.jpg',
-      originalPrice: 199,
-      currentPrice: 59.64,
-      discountPercent: 70,
-      lowestPrice: 59.64,
-      isLowestEver: true,
-      rating: 88,
-      genres: ['动作', '开放世界', '冒险'],
-      steamUrl: 'https://store.steampowered.com/app/271590/Grand_Theft_Auto_V/'
-    },
-    {
-      id: '5',
-      name: 'Baldur\'s Gate 3',
-      coverImage: 'https://cdn.cloudflare.steamstatic.com/steam/apps/1086940/header.jpg',
-      originalPrice: 298,
-      currentPrice: 238.40,
-      discountPercent: 20,
-      lowestPrice: 178.80,
-      isLowestEver: false,
-      rating: 96,
-      genres: ['RPG', '策略', '回合制'],
-      steamUrl: 'https://store.steampowered.com/app/1086940/Baldurs_Gate_3/'
-    },
-    {
-      id: '6',
-      name: 'ELDEN RING',
-      coverImage: 'https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/header.jpg',
-      originalPrice: 298,
-      currentPrice: 208.60,
-      discountPercent: 30,
-      lowestPrice: 178.80,
-      isLowestEver: false,
-      rating: 95,
-      genres: ['动作', 'RPG', '开放世界'],
-      steamUrl: 'https://store.steampowered.com/app/1245620/ELDEN_RING/'
-    },
-    {
-      id: '7',
-      name: 'Red Dead Redemption 2',
-      coverImage: 'https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/header.jpg',
-      originalPrice: 249,
-      currentPrice: 124.50,
-      discountPercent: 50,
-      lowestPrice: 99.60,
-      isLowestEver: false,
-      rating: 93,
-      genres: ['动作', '开放世界', '西部'],
-      steamUrl: 'https://store.steampowered.com/app/1174180/Red_Dead_Redemption_2/'
-    },
-    {
-      id: '8',
-      name: 'Monster Hunter: World',
-      coverImage: 'https://cdn.cloudflare.steamstatic.com/steam/apps/582010/header.jpg',
-      originalPrice: 308,
-      currentPrice: 92.40,
-      discountPercent: 70,
-      lowestPrice: 61.60,
-      isLowestEver: false,
-      rating: 88,
-      genres: ['动作', '角色扮演', '合作'],
-      steamUrl: 'https://store.steampowered.com/app/582010/Monster_Hunter_World/'
-    }
-  ];
-  
-  return mockGames;
+// Convert dollar price to cents
+function toCents(dollars) {
+  return Math.round(parseFloat(dollars) * 100);
 }
 
-// 格式化游戏数据为 TypeScript 代码
-function formatGamesData(games) {
-  const gamesJson = JSON.stringify(games, null, 2)
-    .replace(/"([^"]+)":/g, '$1:')
-    .replace(/: "([^"]+)"/g, ": '$1'")
-    .replace(/: (-?\d+\.?\d*)/g, ': $1');
-  
-  return `import { Game } from '@/types';
-
-export const games: Game[] = ${gamesJson};
-`;
+// Format release date
+function formatReleaseDate(timestamp) {
+  return new Date(timestamp * 1000).toISOString().split('T')[0];
 }
 
-// 记录更新日志
-function logUpdate(gameCount) {
-  const timestamp = new Date().toISOString();
-  const logEntry = `[${timestamp}] 更新了 ${gameCount} 个游戏数据\n`;
+// Fetch deals from CheapShark
+async function fetchDeals() {
+  console.log('Fetching deals from CheapShark API...');
   
-  // 确保目录存在
-  const logDir = path.dirname(UPDATES_LOG);
-  if (!fs.existsSync(logDir)) {
-    fs.mkdirSync(logDir, { recursive: true });
+  const response = await fetch(API_URL);
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.status}`);
   }
   
-  // 追加日志
-  fs.appendFileSync(UPDATES_LOG, logEntry);
+  const deals = await response.json();
+  console.log(`Found ${deals.length} deals`);
   
-  console.log(`✅ 数据更新完成: ${gameCount} 个游戏`);
-  console.log(`📝 已记录到: ${UPDATES_LOG}`);
+  return deals;
 }
 
-// 主函数
-function main() {
-  console.log('🔄 开始更新游戏数据...');
+// Transform CheapShark data to our Game format
+function transformDeal(deal, index) {
+  const game = {
+    id: String(index + 1),
+    name: deal.title,
+    // Use Steam thumbnail as cover image
+    coverImage: deal.thumb.replace('capsule_231x87', 'header').replace('_alt_assets_', '/'),
+    originalPrice: toCents(deal.normalPrice),
+    currentPrice: toCents(deal.salePrice),
+    discountPercent: Math.round(parseFloat(deal.savings)),
+    // CheapShark doesn't provide historical lowest, use current as approximation
+    lowestPrice: toCents(deal.salePrice),
+    isLowestEver: parseFloat(deal.savings) >= 80, // Consider 80%+ as "lowest ever"
+    releaseDate: formatReleaseDate(deal.releaseDate),
+    rating: deal.metacriticScore ? parseInt(deal.metacriticScore) : 0,
+    reviewCount: deal.steamRatingCount ? parseInt(deal.steamRatingCount) : 0,
+    genres: [], // CheapShark doesn't provide genres, we'll leave empty
+    platforms: ['Windows'], // Default to Windows
+    steamUrl: `https://store.steampowered.com/app/${deal.steamAppID}/`
+  };
   
+  // Try to get more game info if we have app ID
+  if (deal.steamAppID) {
+    game.steamUrl = `https://store.steampowered.com/app/${deal.steamAppID}/`;
+  }
+  
+  return game;
+}
+
+// Generate TypeScript file
+function generateTypeScript(games) {
+  const saleEvent = {
+    id: 'current',
+    name: 'Steam 促销中',
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    description: 'Steam 商店最新折扣促销中，热门游戏限时优惠！',
+    isActive: true,
+  };
+
+  const gamesArray = games.map((game, index) => transformDeal(game, index));
+
+  const content = `import { Game, SaleEvent } from '@/types';
+
+export const games: Game[] = ${JSON.stringify(gamesArray, null, 2)};
+
+// Current sale event
+const currentSale: SaleEvent = ${JSON.stringify(saleEvent, null, 2)};
+
+// Get all games
+export function getGames(): Promise<Game[]> {
+  return Promise.resolve(games);
+}
+
+// Get current sale event
+export function getCurrentSale(): Promise<SaleEvent | null> {
+  return Promise.resolve(currentSale);
+}
+
+// Get games with lowest ever price
+export function getLowestEverGames(): Promise<Game[]> {
+  const lowestGames = games.filter(game => game.isLowestEver);
+  return Promise.resolve(lowestGames);
+}
+
+// Format price for display
+export function formatPrice(price: number): string {
+  if (price === 0) return '免费';
+  return \`¥\${(price / 100).toFixed(2)}\`;
+}
+
+// Get today's date formatted
+export function getTodayDate(): string {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+  const day = today.getDate();
+  return \`\${year}年\${month}月\${day}日\`;
+}
+`;
+
+  return content;
+}
+
+// Main function
+async function main() {
   try {
-    // 获取游戏数据
-    const games = fetchSteamGames();
+    const deals = await fetchDeals();
+    const typescript = generateTypeScript(deals);
     
-    // 写入数据文件
-    const dataContent = formatGamesData(games);
-    fs.writeFileSync(GAMES_DATA_FILE, dataContent, 'utf-8');
+    fs.writeFileSync(OUTPUT_FILE, typescript);
+    console.log(`✓ Data written to ${OUTPUT_FILE}`);
+    console.log(`✓ Updated ${deals.length} games`);
     
-    // 记录更新日志
-    logUpdate(games.length);
-    
-    console.log('✨ 更新成功!');
   } catch (error) {
-    console.error('❌ 更新失败:', error.message);
+    console.error('Error:', error.message);
     process.exit(1);
   }
 }
