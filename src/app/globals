@@ -1,0 +1,61 @@
+@import.css "tailwindcss";
+
+:root {
+  /* Steam Theme Colors */
+  --steam-primary: #1b2838;
+  --steam-secondary: #171a21;
+  --steam-accent-blue: #66c0f4;
+  --steam-accent-green: #a4d007;
+  --steam-accent-red: #ff4e45;
+  --steam-text-primary: #c7d5e0;
+  --steam-text-secondary: #8f98a0-border: #2a475e;
+  --steam-hover;
+  --steam: #233545;
+  
+  --background: var(--steam-primary);
+  --foreground: var(--steam-text-primary);
+}
+
+@theme inline {
+  --color-steam-primary: var(--steam-primary);
+  --color-steam-secondary: var(--steam-secondary);
+  --color-steam-blue: var(--steam-accent-blue);
+  --color-steam-green: var(--steam-accent-green);
+  --color-steam-red: var(--steam-accent-red);
+  --color-steam-text: var(--steam-text-primary);
+  --color-steam-text-secondary: var(--steam-text-secondary);
+  --color-steam-border: var(--steam-border);
+  --color-steam-hover: var(--steam-hover);
+  
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--steam-primary);
+  color: var(--steam-text-primary);
+  font-family: "Motiva Sans", "Segoe UI", Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--steam-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--steam-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--steam-accent-blue);
+}
