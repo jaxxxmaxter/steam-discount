@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { Game } from '@/types';
 import { formatPrice } from '@/data/games';
 
@@ -11,8 +12,8 @@ interface GameCardProps {
 export default function GameCard({ game }: GameCardProps) {
   return (
     <div className="group bg-[#171a21] rounded-lg overflow-hidden border border-[#2a475e] hover:border-[#66c0f4] transition-all duration-300 hover:shadow-lg hover:shadow-[#66c0f4]/10 hover:-translate-y-1">
-      {/* Image Container */}
-      <div className="relative aspect-[460/215] overflow-hidden bg-[#0e141d]">
+      {/* Image Container - 点击进入详情 */}
+      <Link href={`/detail/${game.id}`} className="block relative aspect-[460/215] overflow-hidden bg-[#0e141d] cursor-pointer">
         <Image
           src={game.coverImage}
           alt={game.name}
@@ -43,7 +44,7 @@ export default function GameCard({ game }: GameCardProps) {
           </svg>
           <span>{game.rating}%</span>
         </div>
-      </div>
+      </Link>
 
       {/* Content */}
       <div className="p-4">
@@ -88,20 +89,18 @@ export default function GameCard({ game }: GameCardProps) {
           ))}
         </div>
 
-        {/* Steam Button */}
-        <a
-          href={game.steamUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+        {/* Detail Button - 跳转到详情页 */}
+        <Link
+          href={`/detail/${game.id}`}
           className="mt-4 block w-full bg-[#171a21] hover:bg-[#2a475e] text-white font-semibold py-2.5 px-4 rounded border border-[#2a475e] hover:border-[#66c0f4] transition-all duration-300 text-center group/btn"
         >
           <span className="flex items-center justify-center space-x-2">
             <svg className="w-5 h-5 transition-transform duration-300 group-hover/btn:scale-110" viewBox="0 0 24 24" fill="currentColor">
               <path d="M11.979 0C5.668 0 .504 4.926.04 11.13L0 11.56c0 .104.008.208.023.312l.02.094c.028.104.06.207.097.308l.02.06c.041.1.087.197.137.292l.052.09c.046.07.095.138.147.203l.06.077c.053.064.108.126.166.186l.073.07c.06.054.121.106.185.155l.084.063c.063.047.128.092.195.133l.09.052c.066.038.134.074.204.107l.096.045c.07.03.141.058.214.082l.104.032c.072.02.145.038.22.052l.112.018c.075.01.15.018.227.022l.116.006h.007c.076.003.152.003.229 0l.116-.006c.077-.004.152-.012.227-.022l.112-.018c.075-.014.148-.032.22-.052l.104-.032c.073-.024.144-.052.214-.082l.096-.045c.07-.033.138-.069.204-.107l.09-.052c.067-.041.132-.086.195-.133l.084-.063c.064-.05.126-.102.185-.155l.073-.07c.058-.06.113-.122.166-.186l.06-.077c.052-.065.101-.133.147-.203l.052-.09c.05-.095.096-.192.137-.292l.02-.06c.037-.1.07-.204.097-.308l.02-.094c.015-.104.023-.208.023-.312l-.04-.43C.504 4.926 5.668 0 11.979 0zM8.6 5.733c-.623 0-1.13.507-1.13 1.13 0 .623.507 1.13 1.13 1.13.622 0 1.13-.507 1.13-1.13 0-.623-.508-1.13-1.13-1.13zm6.8 0c-.623 0-1.13.507-1.13 1.13 0 .623.507 1.13 1.13 1.13.622 0 1.13-.507 1.13-1.13 0-.623-.508-1.13-1.13-1.13z"/>
             </svg>
-            <span>在 Steam 上购买</span>
+            <span>查看详情</span>
           </span>
-        </a>
+        </Link>
       </div>
     </div>
   );
