@@ -13,10 +13,20 @@ export default async function Home() {
   // Sort games by discount percent (highest first)
   const topDiscountGames = [...games].sort((a, b) => b.discountPercent - a.discountPercent);
 
+  // Default sale event if none found
+  const saleEvent = sale ?? {
+    id: 'default',
+    name: 'Steam 特卖',
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0],
+    description: 'Steam 游戏特卖中',
+    isActive: true,
+  };
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <Hero sale={sale} />
+      <Hero sale={saleEvent} />
 
       {/* Historical Lowest Price Games */}
       <GameGrid 
