@@ -24,6 +24,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - 响应式游戏展示网格已优化，支持不同屏幕尺寸 (1/2/3/4列)
 
+## [1.1.0] - 2026-03-06
+
+### Added
+- **自动化数据更新机制**: 添加 GitHub Actions 工作流
+  - 每天 UTC 0:00 (北京时间 8:00) 自动执行
+  - 支持手动触发 (workflow_dispatch)
+  - 自动检测数据变化并提交更新
+- **数据更新脚本**: `scripts/update-data.js`
+  - 模拟从 Steam API 获取数据
+  - 自动更新 `src/data/games.ts` 文件
+- **日志系统**: `UPDATES.log`
+  - 记录每次更新的时间戳
+  - 记录更新的游戏数量
+- 更新 `package.json` 添加 `update:data` 脚本
+
 ## [1.0.0] - 2026-03-01
 
 ### Added
